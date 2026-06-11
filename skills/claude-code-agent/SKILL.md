@@ -21,7 +21,7 @@ description: 通过 Claude Code CLI 的 `claude -p` Agent SDK 入口，将编码
 ### 新建会话（默认）
 
 ```bash
-claude -p "你的任务描述" --output-format json --permission-mode bypassPermissions --model opus --effort high
+claude -p "你的任务描述" --output-format json --permission-mode bypassPermissions --model <flagship> --effort high
 ```
 
 **返回单个 JSON 对象**，常用字段：
@@ -46,7 +46,7 @@ claude -p "你的任务描述" --output-format json --permission-mode bypassPerm
 ### 事件流输出（`stream-json`）
 
 ```bash
-claude -p "你的任务描述" --output-format stream-json --verbose --model sonnet --effort medium
+claude -p "你的任务描述" --output-format stream-json --verbose --model <workhorse> --effort medium
 ```
 
 `stream-json` **必须配 `--verbose`**，否则 CLI 会直接报错。当前常见事件：
@@ -67,13 +67,13 @@ claude -p "你的任务描述" --output-format stream-json --verbose --model son
 ### 继续指定会话
 
 ```bash
-claude -p "后续提问" --output-format json --model sonnet --effort medium --resume "session_id"
+claude -p "后续提问" --output-format json --model <workhorse> --effort medium --resume "session_id"
 ```
 
 ### 继续最近会话（快捷方式）
 
 ```bash
-claude -p "后续提问" --output-format json --model sonnet --effort medium --continue
+claude -p "后续提问" --output-format json --model <workhorse> --effort medium --continue
 ```
 
 - `--continue` 自动续接当前目录最近一次会话
@@ -82,7 +82,7 @@ claude -p "后续提问" --output-format json --model sonnet --effort medium --c
 ### 管道输入 / stdin
 
 ```bash
-cat logs.txt | claude -p "Explain the failure in these logs" --output-format json --model sonnet --effort low
+cat logs.txt | claude -p "Explain the failure in these logs" --output-format json --model <workhorse> --effort low
 ```
 
 - 适合把日志、长文本、生成中的中间产物直接喂给子 Claude Code
@@ -190,25 +190,27 @@ cat logs.txt | claude -p "Explain the failure in these logs" --output-format jso
 
 | 任务复杂度 | model | effort | 适用场景 |
 |-----------|-------|--------|---------|
-| 高 | `opus` | `high` | 架构设计、复杂重构、多文件编码 |
-| 中 | `sonnet` | `medium` | 单文件功能实现、bug 修复、一般分析 |
-| 低 | `sonnet` | `low` | 简单问答、代码解释、快速续问 |
+| 高 | `<flagship>` | `high` | 架构设计、复杂重构、多文件编码 |
+| 中 | `<workhorse>` | `medium` | 单文件功能实现、bug 修复、一般分析 |
+| 低 | `<workhorse>` | `low` | 简单问答、代码解释、快速续问 |
+
+> 文档里的 `<flagship>` / `<workhorse>` 是占位符，不是真实模型 ID。档位在分派时按平台当前模型梯队解析，不要写死模型名——模型代际更替时档位语义不变：flagship → 平台当前最强推理模型；workhorse → 比 flagship 低一档、性价比更高的模型。实际值用 `claude --help` 或平台公告里的当前别名（如 `fable` / `opus` / `sonnet`）替换。
 
 ## 推荐参数组合
 
 | 场景 | model | effort | permission-mode | 其他 flags |
 |------|-------|--------|-----------------|-----------|
-| 复杂编码 | `opus` | `high` | `bypassPermissions` | `--output-format json` |
-| 一般编码 | `sonnet` | `medium` | `bypassPermissions` | `--output-format json` |
-| 脚本化小修复 | `sonnet` | `medium` | `acceptEdits` | `--bare --allowedTools "Bash,Read,Edit"` |
-| 代码审查 | `sonnet` | `medium` | `plan` | `--allowedTools "Read,Grep,Glob,Bash(git *)"` |
-| 锁死的 CI 检查 | `sonnet` | `medium` | `dontAsk` | `--bare --allowedTools "Read,Grep,Glob"` |
-| 快速问答 | `sonnet` | `low` | `default` | `--no-session-persistence`（⚠️ 不可恢复） |
-| 工具链消费事件流 | `sonnet` | `medium` | 视任务而定 | `--output-format stream-json --verbose` |
-| 有边界的自动化子会话 | `sonnet` | `medium` | 视任务而定 | `--max-turns 3 --max-budget-usd 1` |
-| 干净子进程 / prompt 实验 | `sonnet` | `medium` | `default` 或 `plan` | `--bare` |
-| 结构化输出 | `sonnet` | `medium` | `default` | `--json-schema schema.json` |
-| 隔离执行 | `opus` | `high` | `bypassPermissions` | `--worktree feature-x` |
+| 复杂编码 | `<flagship>` | `high` | `bypassPermissions` | `--output-format json` |
+| 一般编码 | `<workhorse>` | `medium` | `bypassPermissions` | `--output-format json` |
+| 脚本化小修复 | `<workhorse>` | `medium` | `acceptEdits` | `--bare --allowedTools "Bash,Read,Edit"` |
+| 代码审查 | `<workhorse>` | `medium` | `plan` | `--allowedTools "Read,Grep,Glob,Bash(git *)"` |
+| 锁死的 CI 检查 | `<workhorse>` | `medium` | `dontAsk` | `--bare --allowedTools "Read,Grep,Glob"` |
+| 快速问答 | `<workhorse>` | `low` | `default` | `--no-session-persistence`（⚠️ 不可恢复） |
+| 工具链消费事件流 | `<workhorse>` | `medium` | 视任务而定 | `--output-format stream-json --verbose` |
+| 有边界的自动化子会话 | `<workhorse>` | `medium` | 视任务而定 | `--max-turns 3 --max-budget-usd 1` |
+| 干净子进程 / prompt 实验 | `<workhorse>` | `medium` | `default` 或 `plan` | `--bare` |
+| 结构化输出 | `<workhorse>` | `medium` | `default` | `--json-schema schema.json` |
+| 隔离执行 | `<flagship>` | `high` | `bypassPermissions` | `--worktree feature-x` |
 
 ## 使用规则
 
@@ -245,7 +247,7 @@ cd /path/to/project && claude -p \
   "Implement a REST API for TODO items with CRUD endpoints. Use Express.js." \
   --output-format json \
   --permission-mode bypassPermissions \
-  --model opus \
+  --model <flagship> \
   --effort high
 ```
 
@@ -257,7 +259,7 @@ cd /path/to/project && claude -p \
 cd /path/to/project && claude -p \
   "Continue from the current state. Add unit tests for the new endpoints and report only the final outcome." \
   --output-format json \
-  --model sonnet \
+  --model <workhorse> \
   --effort medium \
   --continue
 ```
@@ -273,7 +275,7 @@ cd /path/to/project && claude -p \
   --verbose \
   --permission-mode plan \
   --allowedTools "Read,Grep,Glob,Bash(git *)" \
-  --model sonnet \
+  --model <workhorse> \
   --effort medium
 ```
 
@@ -297,7 +299,7 @@ claude -p "Write a short changelog entry" \
 cat logs.txt | claude -p \
   "Explain the failure in these logs. Return root cause, evidence, and the smallest safe next step." \
   --output-format json \
-  --model sonnet \
+  --model <workhorse> \
   --effort low
 ```
 
@@ -323,7 +325,7 @@ cd /path/to/project && claude -p \
   --output-format json \
   --permission-mode plan \
   --allowedTools "Read,Grep,Glob,Bash(git *)" \
-  --model sonnet \
+  --model <workhorse> \
   --effort medium
 ```
 
@@ -334,7 +336,7 @@ cd /path/to/project && claude -p \
   "Implement the fix in an isolated worktree, run the most relevant tests, and summarize the final result." \
   --output-format json \
   --permission-mode bypassPermissions \
-  --model opus \
+  --model <flagship> \
   --effort high \
   --worktree fix-login-timeout
 ```
@@ -351,7 +353,7 @@ cd /path/to/project && ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY" claude -p \
   --output-format json \
   --permission-mode plan \
   --allowedTools "Read,Grep,Glob" \
-  --model sonnet \
+  --model <workhorse> \
   --effort medium \
   --bare \
   --max-turns 3
