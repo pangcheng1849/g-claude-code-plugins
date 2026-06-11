@@ -186,7 +186,7 @@ Fix layout breaks, console errors, and missing keyboard or contrast affordances 
 </verification_loop>
 ```
 
-Pair this recipe with `--effort high` or `xhigh` for the heavy frontend pass. Claude Opus 4.7 has a strong default house style (cream backgrounds, serif display, italic accents) and generic instructions like "make it minimal" tend to swap one fixed palette for another. For variety, either fill `<design_thesis>` with a concrete alternative direction up front, or ask the model to propose 4 distinct visual directions (bg hex / accent hex / typeface — one-line rationale) and let the user pick before implementation.
+Pair this recipe with `--effort high` or `xhigh` for the heavy frontend pass. Claude models tend to have a strong default house style (as observed on the Opus 4.x generation: cream backgrounds, serif display, italic accents — re-verify on newer generations) and generic instructions like "make it minimal" tend to swap one fixed palette for another. For variety, either fill `<design_thesis>` with a concrete alternative direction up front, or ask the model to propose 4 distinct visual directions (bg hex / accent hex / typeface — one-line rationale) and let the user pick before implementation.
 
 ## Structured Output For A Parent Agent
 

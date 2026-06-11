@@ -34,6 +34,28 @@ test("claude-code-agent skill keeps prompt references discoverable from SKILL.md
   assert.match(source, /`--worktree`/);
 });
 
+test("claude-code-agent skill uses model tier placeholders instead of hard-coded model names", () => {
+  const source = read("SKILL.md");
+
+  // 档位占位符 + 解析说明必须存在
+  assert.match(source, /<flagship>/);
+  assert.match(source, /<workhorse>/);
+  assert.match(source, /占位符，不是真实模型 ID/);
+  assert.match(source, /档位在分派时按平台当前模型梯队解析/);
+  assert.match(source, /flagship → 平台当前最强推理模型/);
+  assert.match(source, /workhorse → 比 flagship 低一档、性价比更高的模型/);
+
+  // 不允许写死具体模型名（占位符说明里举例的别名除外，靠排除 --model/表格单元格形态来约束）
+  assert.doesNotMatch(source, /--model (opus|sonnet|haiku|fable)\b/);
+  assert.doesNotMatch(source, /\|\s*`(opus|sonnet|haiku|fable)`\s*\|/);
+});
+
+test("task prompt recipes do not pin model version numbers", () => {
+  const source = read("references/task-prompt-recipes.md");
+
+  assert.doesNotMatch(source, /Claude Opus 4\.7 has a strong default house style/);
+});
+
 test("task prompt references cover diagnosis, narrow fix, worktree isolation, frontend, and follow-up reuse", () => {
   const source = read("references/task-prompt-recipes.md");
 
