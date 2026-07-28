@@ -68,13 +68,9 @@ Skills that live outside plugins, under `skills/` at the repo root:
 
 | Skill | Description |
 |-------|-------------|
-| [claude-code-agent](./skills/claude-code-agent) | Delegate tasks to an independent Claude Code CLI instance |
-| [codex-agent](./skills/codex-agent) | Delegate tasks to Codex via Codex CLI |
 | [ip-diagnosis](./skills/ip-diagnosis) | Diagnose public IPv4/IPv6, DNS, route, utun, and WebRTC exposure on macOS + Chrome |
 
 ```bash
-npx skills add Ben2pc/g-claude-code-plugins --skill claude-code-agent
-npx skills add Ben2pc/g-claude-code-plugins --skill codex-agent
 npx skills add Ben2pc/g-claude-code-plugins --skill ip-diagnosis
 ```
 
